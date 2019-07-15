@@ -1,0 +1,97 @@
+package com.nmk.api.user.controller;
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+//import com.nmk.api.transactiontype.model.TransactiontypeList;
+import com.nmk.api.user.repository.UserRepository;
+import com.nmk.ecomm.api.exception.HTTP404Exception;
+import com.nmk.ecomm.api.util.UserServiceUtil;
+import com.nmk.ecomm.model.User;
+import com.nmk.ecomm.model.list.UserList;
+import com.nmk.ecomm.service.entity.EcommUser;
+
+@RestController
+@RequestMapping("/api/v1/user")
+public class UserController {
+	 private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	 @Autowired
+	UserRepository userRepository;
+	
+	 @RequestMapping("/")
+	    String hello(){
+	        logger.debug("Debug message");
+	        logger.info("Info message");
+	        logger.warn("Warn message");
+	        logger.error("Error message");
+	        return "Done";
+	    }  
+	
+	 @GetMapping(value = "", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+		public UserList getAllUser() {
+			List<EcommUser> ecommUserList = userRepository.findAll();
+			List<User> list = UserServiceUtil.convertEcommUserListToUser(ecommUserList);
+			UserList userList = new UserList();
+			userList.setData(list);
+			return userList;
+		}
+	 @GetMapping(value = "/{idx}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+		public User getUserByIdx(@PathVariable(value = "idx") Integer userIdx) {
+			EcommUser ecommUser = userRepository.findById(userIdx)
+					.orElseThrow(() -> new HTTP404Exception("idx-" + userIdx + " is not exist"));
+			return UserServiceUtil.convertEcommUserObjectToUser(ecommUser);
+		}
+	 @PostMapping(value = "", consumes = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+		public User createUser(@Valid @RequestBody User user) {
+			EcommUser ecommUser = UserServiceUtil.convertUserToEcommUser(user);
+			EcommUser ecommUser1 = userRepository.save(ecommUser);
+			return UserServiceUtil.convertEcommUserObjectToUser(ecommUser1);
+		}
+	 @DeleteMapping(value = "/{idx}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+		public ResponseEntity<?> deleteUser(@PathVariable(value = "idx") Integer userIdx) {
+			EcommUser ecommUser = userRepository.findById(userIdx)
+					.orElseThrow(() -> new HTTP404Exception("idx-" + userIdx + " is not exist"));
+			userRepository.delete(ecommUser);
+			return ResponseEntity.ok().build();
+		}
+
+	   
+	   @PutMapping(value = "/{idx}", produces = { MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE })
+		public User updateUser(@PathVariable(value = "idx") Integer userIdx,
+				@Valid @RequestBody User user) {
+			EcommUser ecommUser = userRepository.findById(userIdx)
+					.orElseThrow(() -> new HTTP404Exception("idx-" + userIdx + " is not exist"));
+			   ecommUser.setUserId(user.getUserId());
+			   ecommUser.setPwd(user.getPwd());
+			   ecommUser.setFirstName(user.getFirstName());
+			   ecommUser.setLastName(user.getLastName());
+			   ecommUser.setMiddleName(user.getMiddleName());
+			   ecommUser.setEmailAddress(user.getEmailAddress());
+			   ecommUser.setHomePhone(user.getHomePhone());
+			   ecommUser.setWorkPhone(user.getWorkPhone());
+			   ecommUser.setMobilePhone(user.getMobilePhone());
+			   ecommUser.setFax(user.getFax());
+			   ecommUser.setStatus(user.getStatus());
+			   ecommUser.setCreatedBy(user.getCreatedBy());
+			   ecommUser.setCreateDate(user.getCreateDate());
+			   ecommUser.setModifiedBy(user.getModifiedBy());
+			   ecommUser.setModifiedDate(user.getModifiedDate());
+			EcommUser updatedUser = userRepository.save(ecommUser);
+			return UserServiceUtil.convertEcommUserObjectToUser(updatedUser);
+		}
+}

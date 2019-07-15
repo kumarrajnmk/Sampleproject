@@ -1,0 +1,26 @@
+http://localhost:8080/api/v1/card
+http://localhost:8080/api/v1/card/1
+http://localhost:8080/api/v1/card/
+http://localhost:8080/api/v1/card/transactions/cardId/1/trantype/0
+
+
+Sample Message
+===========================
+<user>
+<createDate>2017-10-03T23:04:28-07:00</createDate>
+<createdBy>test</createdBy>
+<emailAddress>t@gmail.com</emailAddress>
+<fax>777777</fax>
+<firstName>test</firstName>
+<homePhone>5108988888</homePhone>
+<lastName>tn</lastName>
+<middleName>tm</middleName>
+<mobilePhone>567890222</mobilePhone>
+<modifiedBy>test</modifiedBy>
+<modifiedDate>2017-10-03T23:04:28-07:00</modifiedDate>
+<pwd>test123</pwd>
+<status>ACTV</status>
+<uid>4</uid>
+<userId>test12</userId>
+<workPhone>510899999</workPhone>
+</user>
